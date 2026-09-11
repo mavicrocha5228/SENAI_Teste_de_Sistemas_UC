@@ -4,7 +4,7 @@ import database as db
 db.criar_tabela()
 
 # CRIAR TABELA (C)
-st.title("PAINEL DE GESTÃO DE ALUNOS", text_alignment="center")
+st.title("PAINEL DE GESTÃO DE LIVROS", text_alignment="center")
 st.header("⭐️⋆౨ৎ˚⟡˖ ࣪☀️")
 
 st.subheader("Insira as informações do livro abaixo:")
