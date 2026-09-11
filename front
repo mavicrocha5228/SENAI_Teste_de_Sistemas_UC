@@ -1,0 +1,77 @@
+import streamlit as st
+import database as db
+
+db.criar_tabela()
+
+# CRIAR TABELA (C)
+st.title("PAINEL DE GESTÃO DE ALUNOS", text_alignment="center")
+st.header("⭐️⋆౨ৎ˚⟡˖ ࣪☀️")
+
+st.subheader("Insira as informações do livro abaixo:")
+with st.form("cadastrar_livro"):
+    livro_tit = st.text_input("Insira o titulo do livro")
+    autor = st.text_input("Insira o nome do autor")
+    data_publi = st.number_input("Insira o ano de publicação", min_value=0, max_value=2026, step=1)
+    enviado = st.form_submit_button("Enviar")
+
+    if enviado:
+        msg = db.cadastro_livro(livro_tit, autor, data_publi)
+        st.success(msg)
+
+#DELETAR LIVRO (D)
+
+with st.form("form_delete_livro"):
+    st.subheader("Deletar Livro")
+    id_livro = st.number_input("ID livro!!!!!!", value=0, step=1, min_value=0)
+    deletar = st.form_submit_button("Deletar Livro") 
+    
+    if deletar:
+        msg = db.delete_livro(id_livro)
+        st.success(msg)
+
+#ATUALIZAR LIVRO (U)
+
+with st.form("form_update_status"):
+    st.subheader("Alterar status do livro")
+    id_livro = st.number_input("ID do livro!!!!!!", value=0, step=1, min_value=0)
+    status = st.selectbox("Novo status", ["Não Lido", "Lendo", "Lido"])
+    btn_update_status = st.form_submit_button("Atualizar Status do livro")
+
+    if btn_update_status:
+        msg = db.update_status_livro(id_livro, status)
+        st.success(msg)
+
+st.divider()
+st.subheader("Biblioteca Virtual")
+
+#PROCURAR LIVRO (U)
+
+listaLivros = db.getLivros()
+
+if not listaLivros:
+    st.warning("Não há livros cadastrados")
+else:
+    dataLivros = [
+        {
+            "ID": livro[0], 
+            "Título": livro[1], 
+            "Autor": livro[2],
+            "Ano": livro[3],
+            "Status": livro[4]
+        } 
+        for livro in listaLivros
+    ] 
+    st.dataframe(dataLivros, use_container_width=True)
+
+
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("https://tse4.mm.bing.net/th/id/OIP.7sKcEwz4DRYu5fOsOXdXAwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3");
+        background-size: cover;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
