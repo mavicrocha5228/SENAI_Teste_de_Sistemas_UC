@@ -1,0 +1,84 @@
+import sqlite3
+
+def conectar(nome_banco= "escola.db"):
+    conn = sqlite3.connect(nome_banco)
+    return conn
+
+# CRIA A TABELA (C PARTE 1)
+def criar_tabela(nome_banco= "escola.db"):
+    conn = conectar(nome_banco)
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS livros (
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        autor TEXT NOT NULL,
+        ano_publicacao INTEGER NOT NULL,
+        status TEXT CHECK(status IN ('Não Lido', 'Lendo', 'Lido')) DEFAULT 'Não Lido'
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+# CADASTRA A TABELA (C PARTE 2)
+def cadastro_livro(titulo, autor, ano_publicacao,
+                   nome_banco= "escola.db"):
+    
+    if titulo.strip() == "":
+        return "Não poderá teu titulo achar-se vazio, pois nome algum se há de apresentar sem a devida inscrição."
+    elif autor.strip() == "":
+        return "Onde andara aquele que transcreveu tamanha grandeza ao mundo real?"
+    elif ano_publicacao > 2026:
+        return "Podera no futuro se encontar o que agora se mostra atual?"   
+    else:
+        conn = conectar(nome_banco)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO livros (titulo, autor, ano_publicacao, status) VALUES (?, ?, ?, 'Não Lido')", 
+                       (titulo, autor, ano_publicacao)) 
+        conn.commit()
+        conn.close()
+        return "Livro cadastrado com sucesso! 📚"
+    
+# DELETAR LIVRO (D) 
+def delete_livro(ID, nome_banco= "escola.db"):
+    if ID > 0:
+    
+        conn = conectar(nome_banco)
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM livros WHERE id = ?", (ID,))  
+
+        conn.commit()
+        conn.close()
+
+        return True
+    else:
+        return False
+
+#ATUALIZAR LIVRO (U)
+def update_status_livro(ID, status, nome_banco= "escola.db"):
+    if ID <= 0:
+        return "ID inválido."
+    
+    conn = conectar(nome_banco)
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE livros SET status = ? WHERE ID = ?", (status, ID))
+    rowsaffected = cursor.rowcount
+    conn.commit()
+    conn.close()
+
+    if rowsaffected > 0:
+        return "Status atualizado com sucesso!"
+    else:
+        return "Livro não encontrado."
+
+#PEGAR O LIVRO (R)
+
+def getLivros(nome_banco="escola.db"):
+    conn = conectar(nome_banco)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM livros")
+    dadosLivros = cursor.fetchall()
+    conn.close()
+    return dadosLivros
